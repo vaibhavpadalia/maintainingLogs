@@ -2,7 +2,10 @@ var mongoose = require('mongoose');
 var User = mongoose.model('userData');
 var answer = require('../main');
 const jwt = require('jsonwebtoken');
-var token = '';
+token = '';
+var c = 'hello';
+
+
 exports.createUser = (req,res) => {
     var user = new User({
         email: req.body.email,
@@ -21,13 +24,12 @@ exports.createUser = (req,res) => {
 }   
 
 exports.getUser = (req, res) => {
-    var email = req.params.email;
     User.find({}, (error, response) => {
-        if (response !== null) {
-            answer.success(req.url, req.method, 'GetUser()', new Date(), response,this.token, res);
+        if (error) {
+            answer.failed(req.url, req.method, 'GetUser()', new Date(), error, this.token, res);
             }
         else {
-            answer.failed(req.url, req.method, 'GetUser()', new Date(), error, this.token, res);
+            answer.success(req.url, req.method, 'GetUser()', new Date(), response, this.token, res);
             }
         });
 }
@@ -42,16 +44,18 @@ exports.getToken = (req, res) => {
 }
 
 exports.verifyLogin = function (req, res, next) {
-    var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers.authorization;
-    if (token) {
+    // console.log(token);
+    if (req.headers.authorization) {
         jwt.verify(req.headers.authorization.split(' ')[1], 'ThisIsSomethingThatIMustHideFromOthers', function (err, decoded) {
             if (err) { 
-                answer.failed(req.url, req.method, 'VerifyToken()', new Date(), err, this.token, res);
+                answer.failed(req.url, req.method, 'VerifyToken()', new Date(), err, 'Token', res);
             }
+            else {
             req.decoded = decoded;
             next();
+            }
         });
     } else {
-        answer.failed(req.url, req.method, 'VerifyToken()', new Date(), 'Unauthorized user', this.token, res);
+        answer.failed(req.url, req.method, 'VerifyToken()', new Date(), 'Unauthorized Error', 'Token', res);
     }
 }

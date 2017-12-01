@@ -1,7 +1,7 @@
 var fs = require('fs');
 var success = function (url, method, functionName, time, response, sessionid ,res) {
     var filename = '/' + sessionid + '_Success_Log.txt'
-    var date = new Date().toJSON().slice(0, 10);
+    var date = new Date().getFullYear() + '-' + (new Date().getMonth()+1) + '-' + new Date().getDate();
     if (fs.existsSync('logs/' + date)) {
     if (fs.existsSync('logs/'+ date + filename)) {
        successFunction(date, method, functionName, url, time, response, filename);
@@ -22,7 +22,7 @@ else {
             successFunction(date, method, functionName, url, time, response ,filename);
         }
 }
-    return res.json({
+     res.json({
         success: true,
         status: 200,
         body: response
@@ -30,7 +30,7 @@ else {
 }
 
 var failed = function (url, method, functionName, time, error, sessionid, res) {
-    var date = new Date().toJSON().slice(0, 10);
+    var date = new Date().getFullYear() + '-' + (new Date().getMonth() + 1) + '-' + new Date().getDate();
     var filename = '/' + sessionid + '_Error_Log.txt'
 
     if (fs.existsSync('logs/' + date)) {
@@ -53,7 +53,7 @@ var failed = function (url, method, functionName, time, error, sessionid, res) {
             failedFunction(date, method, functionName, url, time, error, filename);
         }
     }
-    return res.json({
+    res.json({
         success: false,
         status: 404,
         body: error
@@ -62,7 +62,6 @@ var failed = function (url, method, functionName, time, error, sessionid, res) {
 
 
 function successFunction (date ,method , functionName, url, time, response, filename) {
-    console.log('In write success');
     fs.appendFileSync('logs/' + date + filename, 'Method: '
         + method + ' || Function Name: ' + functionName + ' || Url: ' + url 
         + ' || Time: ' + time + ' || Response:' + JSON.stringify(response) + '\n');
@@ -70,7 +69,6 @@ function successFunction (date ,method , functionName, url, time, response, file
 
 
 function failedFunction(date, method, functionName, url, time, error, filename) {
-    console.log('In write failure');
     fs.appendFileSync('logs/' + date + filename, 'Method: '
         + method + ' || Function Name: ' + functionName + ' || Url: ' + url 
         + ' || Time: ' + time + ' || Response:' + JSON.stringify(error) + '\n');
