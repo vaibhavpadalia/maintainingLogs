@@ -2,8 +2,7 @@ var mongoose = require('mongoose');
 var User = mongoose.model('userData');
 var answer = require('../main');
 const jwt = require('jsonwebtoken');
-token = '';
-var c = 'hello';
+var token = '';
 
 
 exports.createUser = (req,res) => {
