@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var User = mongoose.model('userData');
 var answer = require('../main');
 const jwt = require('jsonwebtoken');
-var token = '';
+var token = '' ;
 
 
 exports.createUser = (req,res) => {
@@ -34,20 +34,15 @@ exports.getUser = (req, res) => {
 }
 
 exports.getToken = (req, res) => {
-    this.token = jwt.sign({
-        message: 'Something that you want'
-    }, 'ThisIsSomethingThatIMustHideFromOthers', {
-            expiresIn: '30m'
-        });
+    this.token = setToken();
     answer.success(req.url, req.method, 'GetToken()', new Date(), this.token,this.token, res);
 }
 
 exports.verifyLogin = function (req, res, next) {
-    // console.log(token);
     if (req.headers.authorization) {
         jwt.verify(req.headers.authorization.split(' ')[1], 'ThisIsSomethingThatIMustHideFromOthers', function (err, decoded) {
             if (err) { 
-                answer.failed(req.url, req.method, 'VerifyToken()', new Date(), err, 'Token', res);
+                answer.failed(req.url, req.method, 'VerifyToken()', new Date(), err, this.token, res);
             }
             else {
             req.decoded = decoded;
@@ -55,6 +50,15 @@ exports.verifyLogin = function (req, res, next) {
             }
         });
     } else {
-        answer.failed(req.url, req.method, 'VerifyToken()', new Date(), 'Unauthorized Error', 'Token', res);
+        answer.failed(req.url, req.method, 'VerifyToken()', new Date(), 'Unauthorized Error', this.token, res);
     }
+}
+
+function setToken() {
+    this.token = jwt.sign({
+        message: 'Something that you want'
+    }, 'ThisIsSomethingThatIMustHideFromOthers', {
+            expiresIn: '30m'
+        });
+        return this.token;
 }
